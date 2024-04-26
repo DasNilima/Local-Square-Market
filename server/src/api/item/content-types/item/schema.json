@@ -39,7 +39,7 @@
       "type": "enumeration",
       "enum": [
         "BestSellers",
-        "NewArrivals",
+        "Today'sDeals",
         "NewReleases"
       ]
     }
