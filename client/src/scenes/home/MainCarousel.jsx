@@ -1,4 +1,4 @@
-import { Box,IconButton, useMediaQuery } from "@mui/material";
+import { Box,IconButton, useMediaQuery, Typography } from "@mui/material";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
@@ -17,14 +17,14 @@ const heroTextureImports = importAll(
 );
 
 const MainCarousel = () => {
-// const isNonMobile = useMediaQuery("(min-width:600px)");
+const isNonMobile = useMediaQuery("(min-width:600px)");
 return (
     <Carousel
         infiniteLoop={true}
         showThumbs={false}
         showIndicators={false}
         showStatus={false}
-        // autoPlay={true}
+        autoPlay={true}
         renderArrowPrev={(onClickHandler, hasPrev, label) => (
         <IconButton
             onClick={onClickHandler}
@@ -68,7 +68,7 @@ return (
                 backgroundAttachment: "fixed",
             }}
         />
-        {/* <Box
+        <Box
             color="white"
             padding="20px"
             borderRadius="1px"
@@ -90,7 +90,7 @@ return (
             >
             Discover More
             </Typography>
-        </Box> */}
+        </Box>
         </Box>
     ))}
     </Carousel>

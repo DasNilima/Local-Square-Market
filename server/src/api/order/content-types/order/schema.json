@@ -20,6 +20,9 @@
     },
     "userName": {
       "type": "string"
+    },
+    "stripeSessionId": {
+      "type": "string"
     }
   }
 }

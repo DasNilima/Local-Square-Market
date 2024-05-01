@@ -4,11 +4,25 @@
 // export default Payment;
 import { Box, Typography } from "@mui/material";
 import TextField from "@mui/material/TextField";
-import { PaymentForm, CreditCard } from 'react-square-web-payments-sdk';
-import { useSelector } from "react-redux";
+// import { PaymentForm, CreditCard } from 'react-square-web-payments-sdk';
+
 
 const Payment = ({ values, touched, errors, handleBlur, handleChange }) => {
-    const cart = useSelector((state) => state.cart.cart);
+
+//     // Assume this function is called after a successful order creation
+// function redirectToConfirmationPage(orderId, successUrl) {
+//     // Redirect the user to the confirmation page
+//     window.location.href = successUrl;
+// }
+    
+    
+// // Assume this function is called to display an error message
+// function displayErrorMessage(message) {
+//     // Display the error message to the user (you can implement this according to your UI)
+//     console.error('Error:', message);
+// }
+
+
 return (
     <Box m="30px 0">
       {/* CONTACT INFO */}
@@ -16,7 +30,7 @@ return (
         <Typography sx={{ mb: "15px" }} fontSize="18px">
         Contact Info
         </Typography>
-        {/* <TextField
+        <TextField
         fullWidth
         type="text"
         label="Email"
@@ -27,7 +41,7 @@ return (
         error={!!touched.email && !!errors.email}
         helperText={touched.email && errors.email}
         sx={{ gridColumn: "span 4", marginBottom: "15px" }}
-        /> */}
+        />
         <TextField
         fullWidth
         type="text"
@@ -53,21 +67,19 @@ return (
         sx={{ gridColumn: "span 4" }}
         />
         </Box>
-        <box>
+        {/* <Box>
         <PaymentForm
-        cardTokenizeResponseReceived={async(token) => {
-            // const requestBody = {
-            //     sourceId: token.token,
-            //     userName: `${values.firstName} ${values.lastName}`,
-            //     products: cart.map(({ id, count }) => ({
-            //         id,
-            //         count,
-            //     })),
-            // };
-    
-                const response = await fetch("http://localhost:1337/api/orders", {
+                applicationId="sandbox-sq0idb-5eXPP6n6neJN94sQ_Tv-1w"
+                locationId='L6ZZSAG3AYCP4'
+                cardTokenizeResponseReceived=
+                {
+                async (token) => {
+                const createOrderResponse = await fetch("http://localhost:1337/api/orders", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers:
+                    {
+                        "Content-Type": "application/json"
+                    },
                     body: JSON.stringify({
                         sourceId: token.token,
                         userName: `${values.firstName} ${values.lastName}`,
@@ -76,19 +88,22 @@ return (
                             count,
                         })),
                     }),
-                });
-                const session = await response.json();
-                // Handle the session response here if needed
-                console.log(session);
-
-        }} 
-        applicationId="sandbox-sq0idb-5eXPP6n6neJN94sQ_Tv-1w"
-        locationId='L6ZZSAG3AYCP4'
+                })
+                const createOrderResult = await createOrderResponse.json();
+                if (createOrderResult.id && createOrderResult.success_url) {
+                    redirectToConfirmationPage(createOrderResult.id, createOrderResult.success_url);
+                } else {
+                    // Handle error case
+                    displayErrorMessage(createOrderResult.error.message);
+                }
+                    
+                    }
+                } 
+                
     >
         <CreditCard />
     </PaymentForm>
-
-        </box>
+    </Box> */}
 </Box>
 );
 };

@@ -5,10 +5,17 @@ import { shades } from "../../theme";
 import * as yup from "yup";
 import Shipping from "./Shipping";
 import Payment from "./Payment";
+import { useSelector } from "react-redux";
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe(
+    "pk_test_51P5KIzFyGLQkC1b3QC7booCUSTl3dEFXOOwELcwK7WKhIaLX2YijcSQe8bXiSFyUKah06ewSCmqU6WzHOXj4s76i005SPDCtqK"
+);
 
 
 const Checkout = () => {
     const [activeStep, setActiveStep] = useState(0);
+    const cart = useSelector((state) => state.cart.cart);
     const isFirstStep = activeStep === 0;
     const isSecondStep = activeStep === 1;
 
@@ -21,14 +28,60 @@ const Checkout = () => {
                 isSameAddress: true,
             });
         }
-
         if (isSecondStep) {
             makePayment(values); // Wait for payment completion before proceeding
         }
         actions.setTouched({});
         };
-    // frontend logic for square payment
+    // frontend logic for stripe payment
+    // async function makePayment(values) {
+    //     // try {
+    //     //     // Make a POST request to the server-side endpoint for creating payments
+    //     //     const response = await fetch("http://localhost:1337/api/orders", {
+    //     //         method: "POST",
+    //     //         headers: { "Content-Type": "application/json" },
+    //     //         body: JSON.stringify({
+    //     //             sourceId: token.token,
+    //     //             userName: `${values.firstName} ${values.lastName}`,
+    //     //             products: cart.map(({ id, count }) => ({
+    //     //                 id,
+    //     //                 count,
+    //     //             })),
+    //     //         }),
+    //     //     });
+    
+    //     //     if (!response.ok) {
+    //     //         throw new Error('Failed to create payment');
+    //     //     }
+    
+    //     //     const session = await response.json();
+    
+    //     //     // Redirect the user to the Square checkout page
+    //     //     window.location.href = session.successUrl; // Adjust this based on the response from your server
+    //     // } catch (error) {
+    //     //     console.error('Error initiating Square payment:', error);
+    //     //     // Handle error (e.g., display error message to the user)
+    //     // }
+    // }
     async function makePayment(values) {
+        const stripe = await stripePromise;
+        const requestBody = {
+            userName: [values.firstName, values.lastName].join(" "),
+            email: values.email,
+            products: cart.map(({ id, count }) => ({
+            id,
+            count,
+        })),
+    };
+        const response = await fetch("http://localhost:1337/api/orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestBody),
+        });
+        const session = await response.json();
+        await stripe.redirectToCheckout({
+            sessionId: session.id,
+        });
     }
         // Initial form values
         const initialValues = {
@@ -157,56 +210,87 @@ const Checkout = () => {
                     handleChange={handleChange}
                     setFieldValue={setFieldValue}
                 />
-                            )}
-            {(activeStep !== 1) &&
-                        <Box display="flex" justifyContent="space-between" gap="50px">
-                            {!isFirstStep && (
-                                <Button
-                                    fullWidth
-                                    color="primary"
-                                    variant="contained"
-                                    sx={{
-                                        backgroundColor: shades.primary[200],
-                                        boxShadow: "none",
-                                        color: "white",
-                                        borderRadius: 0,
-                                        padding: "15px 40px",
-                                    }}
-                                    onClick={() => setActiveStep(activeStep - 1)}
-                                >Back
-                                </Button>
-                            )}
-                            <Button
-                                fullWidth
-                                type="submit"
-                                color="primary"
-                                variant="contained"
-                                sx={{
-                                    backgroundColor: shades.primary[400],
-                                    boxShadow: "none",
-                                    color: "white",
-                                    borderRadius: 0,
-                                    padding: "15px 40px",
-                                }}
-                            >
-                                {!isSecondStep ? "Next" : "Place Order"}
-                            </Button>
-                        </Box>}
-            </form>
-                    )}
-                    
-        </Formik>
+                )}
+            <Box display="flex" justifyContent="space-between" gap="50px">
+                {!isFirstStep && (
+                <Button
+                    fullWidth
+                    color="primary"
+                    variant="contained"
+                    sx={{
+                        backgroundColor: shades.primary[200],
+                        boxShadow: "none",
+                        color: "white",
+                        borderRadius: 0,
+                        padding: "15px 40px",
+                    }}
+                    onClick={() => setActiveStep(activeStep - 1)}
+                >
+                    Back
+                </Button>
+                )}
+                <Button
+                    fullWidth
+                    type="submit"
+                    color="primary"
+                    variant="contained"
+                    sx={{
+                    backgroundColor: shades.primary[400],
+                    boxShadow: "none",
+                    color: "white",
+                    borderRadius: 0,
+                    padding: "15px 40px",
+                }}
+                >
+                {!isSecondStep ? "Next" : "Place Order"}
+                </Button>
             </Box>
+        </form>
+    )}
+        </Formik>
     </Box>
-    );
-    };
-
-
-
-
+</Box>
+);
+};
 
 
 export default Checkout;
 
 
-
+// this for square payment
+// {(activeStep !== 1) &&
+//     <Box display="flex" justifyContent="space-between" gap="50px">
+//         {!isFirstStep && (
+//             <Button
+//                 fullWidth
+//                 color="primary"
+//                 variant="contained"
+//                 sx={{
+//                     backgroundColor: shades.primary[200],
+//                     boxShadow: "none",
+//                     color: "white",
+//                     borderRadius: 0,
+//                     padding: "15px 40px",
+//                 }}
+//                 onClick={() => setActiveStep(activeStep - 1)}
+//             >Back
+//             </Button>
+//         )}
+//         <Button
+//             fullWidth
+//             type="submit"
+//             color="primary"
+//             variant="contained"
+//             sx={{
+//                 backgroundColor: shades.primary[400],
+//                 boxShadow: "none",
+//                 color: "white",
+//                 borderRadius: 0,
+//                 padding: "15px 40px",
+//             }}
+//             // onClick={() => this.cardTokenizeResponseReceived(token)}
+//         >
+//         {!isSecondStep ? "Next" : "Place Order"}
+//                 </Button>
+//         {/* <PaymentForm values={this.state.values} cart={this.state.cart} /> */}
+//     </Box>}

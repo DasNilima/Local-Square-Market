@@ -1,5 +1,5 @@
 import { createTheme } from '@mui/material/styles';
-import { dark, light } from '@mui/material/styles/createPalette';
+
 
 export const shades = {
     primary: {
